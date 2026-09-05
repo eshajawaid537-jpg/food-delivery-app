@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Navbar from './components/navbar';
+import Sidebar from './components/sidebar';
 import FoodCard from './components/foodcard';
 import AuthModal from './components/authmodal';
 import MyOrdersModal from './components/myordersmodal';
@@ -95,6 +96,15 @@ function App() {
         user={user}
         onLogout={() => setUser(null)}
         onMyOrdersClick={() => setIsMyOrdersOpen(true)}
+      />
+
+      <Sidebar 
+        isOpen={isSidebarOpen} 
+        onClose={() => setIsSidebarOpen(false)}
+        onSelectCategory={(category) => {
+          setSelectedCategory(category);
+          setIsSidebarOpen(false);
+        }}
       />
 
       <AuthModal 
