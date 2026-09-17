@@ -17,10 +17,16 @@ function App() {
   const [isMyOrdersOpen, setIsMyOrdersOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isAdminDashboardOpen, setIsAdminDashboardOpen] = useState(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [user, setUser] = useState(null);
 
   // Food Items List
   const foodItems = [
+    // --- SPECIAL DEALS ---
+    { _id: "deal1", name: "Couple Combo Deal 👩‍❤️‍👨", description: "2 Crisp Zinger Burgers + 1 Large French Fries + 2 Chilled Soft Drinks (345ml)", price: 1390, category: "Deals", image: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f6?w=600&auto=format&fit=crop&q=80" },
+    { _id: "deal2", name: "Family Feast Deal 🍕👨‍👩‍👧‍👦", description: "2 Medium Pizzas (Any Flavors) + 1 Garlic Bread Stuffed + 1.5 Litre Soft Drink", price: 2690, category: "Deals", image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=80" },
+    { _id: "deal3", name: "4 Friends Hungama Deal 🍔🍟", description: "4 Smoky BBQ Beef/Chicken Burgers + 2 Family Fries + 4 Soft Drinks", price: 2990, category: "Deals", image: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&auto=format&fit=crop&q=80" },
+
     // --- BURGERS ---
     { _id: "b1", name: "Supreme Crispy Zinger", description: "Crunchy fried chicken fillet with melted cheddar cheese slice & mayo", price: 580, category: "Burgers", image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop&q=80", variants: [{ name: "Single Patty", price: 580 }, { name: "Double Patty Cheese", price: 820 }] },
     { _id: "b2", name: "Smoky BBQ Beef Burger", description: "Grilled juicy beef patty with caramelized onions & signature BBQ sauce", price: 720, category: "Burgers", image: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&auto=format&fit=crop&q=80", variants: [{ name: "Standard 150g", price: 720 }, { name: "Monster Double 300g", price: 980 }] },
@@ -59,7 +65,7 @@ function App() {
   const handleAddToCart = (item) => setCart([...cart, item]);
   const calculateTotal = () => cart.reduce((sum, item) => sum + item.price, 0);
 
-  const categories = ['All', 'Burgers', 'Pizza', 'Pasta', 'Wraps & Rolls', 'Desserts', 'Drinks'];
+  const categories = ['All', 'Deals', 'Burgers', 'Pizza', 'Pasta', 'Wraps & Rolls', 'Desserts', 'Drinks'];
 
   const filteredItems = foodItems.filter(item => {
     const matchesCategory = selectedCategory === 'All' || item.category?.toLowerCase() === selectedCategory.toLowerCase();
@@ -78,13 +84,13 @@ function App() {
     setIsCheckoutOpen(true);
   };
 
-  const handleOrderComplete = () => {
-    setCart([]);
-    setIsCheckoutOpen(false);
+  const scrollToFooter = () => {
+    const footer = document.getElementById('footer-section');
+    if (footer) footer.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <div style={{ fontFamily: "'Poppins', sans-serif", backgroundColor: '#f4f6f9', minHeight: '100vh', paddingBottom: '60px' }}>
+    <div style={{ fontFamily: "'Poppins', sans-serif", backgroundColor: '#f4f6f9', minHeight: '100vh' }}>
       
       <Navbar 
         cartCount={cart.length} 
@@ -105,6 +111,8 @@ function App() {
           setSelectedCategory(category);
           setIsSidebarOpen(false);
         }}
+        onScrollToFooter={scrollToFooter}
+        onOpenAbout={() => setIsAboutModalOpen(true)}
       />
 
       <AuthModal 
@@ -125,7 +133,7 @@ function App() {
         cart={cart}
         totalBill={calculateTotal()}
         user={user}
-        onOrderSuccess={handleOrderComplete}
+        onOrderSuccess={() => { setCart([]); setIsCheckoutOpen(false); }}
       />
 
       <AdminDashboard
@@ -135,21 +143,36 @@ function App() {
       />
 
       {/* Hero Banner */}
-      <div style={{ background: 'linear-gradient(135deg, #1e272e 0%, #ff3838 100%)', color: 'white', padding: '50px 20px', textAlign: 'center' }}>
-        <h1>Craving Delicious Food? 🍕</h1>
-        <p>Get hot & fresh meals delivered straight to your door!</p>
+      <div style={{ background: 'linear-gradient(135deg, #111827 0%, #ff3838 100%)', color: 'white', padding: '60px 20px', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '36px', fontWeight: '800' }}>Craving Delicious Food? 🍕</h1>
+        <p style={{ fontSize: '18px', opacity: 0.9 }}>Get hot & fresh meals delivered straight to your door!</p>
         
-        {/* Admin Secret Portal Button */}
+        {/* Banner Stats */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', marginTop: '30px', flexWrap: 'wrap' }}>
+          <div>
+            <h2 style={{ margin: 0, color: '#ff7675' }}>15K+</h2>
+            <p style={{ margin: 0, fontSize: '14px', color: '#d1d5db' }}>Happy Diners</p>
+          </div>
+          <div>
+            <h2 style={{ margin: 0, color: '#ff7675' }}>4.9 ★</h2>
+            <p style={{ margin: 0, fontSize: '14px', color: '#d1d5db' }}>Customer Rating</p>
+          </div>
+          <div>
+            <h2 style={{ margin: 0, color: '#ff7675' }}>30 Min</h2>
+            <p style={{ margin: 0, fontSize: '14px', color: '#d1d5db' }}>Fast Delivery</p>
+          </div>
+        </div>
+
         <button
           onClick={() => setIsAdminDashboardOpen(true)}
-          style={{ marginTop: '15px', padding: '8px 18px', backgroundColor: '#2d3436', color: '#ff7675', border: '1px solid #ff7675', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}
+          style={{ marginTop: '25px', padding: '8px 18px', backgroundColor: '#1f2937', color: '#ff7675', border: '1px solid #ff7675', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}
         >
           👨‍🍳 Admin Panel
         </button>
       </div>
 
-      {/* Categories Filter */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap', margin: '30px 0' }}>
+      {/* Categories Filter Bar */}
+      <div id="food-menu-section" style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap', margin: '30px 0' }}>
         {categories.map(cat => (
           <button
             key={cat}
@@ -161,30 +184,70 @@ function App() {
               fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.05)'
             }}
           >
-            {cat}
+            {cat} {cat === 'Deals' ? '🔥' : ''}
           </button>
         ))}
       </div>
 
       {/* Food Cards Grid */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', maxWidth: '1200px', margin: '0 auto', minHeight: '300px' }}>
         {filteredItems.map(item => <FoodCard key={item._id} item={item} onAddToCart={handleAddToCart} />)}
       </div>
 
+      {/* Customer Reviews Section */}
+      <div style={{ backgroundColor: '#ffffff', padding: '50px 20px', marginTop: '60px', textAlign: 'center' }}>
+        <h2 style={{ color: '#2d3436', fontWeight: '800' }}>❤️ Customer Reviews & Ratings</h2>
+        <p style={{ color: '#636e72' }}>Rated 4.9/5 Stars by over 15,000+ Foodies!</p>
+
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', flexWrap: 'wrap', marginTop: '30px', maxWidth: '1000px', margin: '30px auto 0' }}>
+          <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '15px', width: '280px', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
+            <p style={{ color: '#ffb142', fontSize: '18px', margin: '0 0 10px' }}>★★★★★</p>
+            <p style={{ fontSize: '14px', color: '#2d3436', fontStyle: 'italic' }}>"The Zinger Burger was super crispy and delivered in just 25 minutes hot & fresh!"</p>
+            <strong style={{ display: 'block', marginTop: '10px', color: '#ff3838' }}>- Hamza Malik</strong>
+          </div>
+
+          <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '15px', width: '280px', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
+            <p style={{ color: '#ffb142', fontSize: '18px', margin: '0 0 10px' }}>★★★★★</p>
+            <p style={{ fontSize: '14px', color: '#2d3436', fontStyle: 'italic' }}>"Family Feast Deal is the best value deal in town! Loved the stuffed crust pizza."</p>
+            <strong style={{ display: 'block', marginTop: '10px', color: '#ff3838' }}>- Ayesha Khan</strong>
+          </div>
+
+          <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '15px', width: '280px', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
+            <p style={{ color: '#ffb142', fontSize: '18px', margin: '0 0 10px' }}>★★★★★</p>
+            <p style={{ fontSize: '14px', color: '#2d3436', fontStyle: 'italic' }}>"Fastest delivery ever! Exactly 30 minutes. 10/10 service and food quality."</p>
+            <strong style={{ display: 'block', marginTop: '10px', color: '#ff3838' }}>- Bilal Ahmed</strong>
+          </div>
+        </div>
+      </div>
+
+      {/* About Us Modal */}
+      {isAboutModalOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 600 }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '20px', width: '90%', maxWidth: '500px', padding: '30px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h2 style={{ margin: 0, color: '#ff3838' }}>🍕 About FoodExpress</h2>
+              <button onClick={() => setIsAboutModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer' }}>✕</button>
+            </div>
+            <hr style={{ margin: '15px 0' }} />
+            <p style={{ lineHeight: '1.6', color: '#2d3436' }}>
+              Welcome to <strong>FoodExpress</strong>! We are dedicated to serving you delicious, fresh, and high-quality gourmet food delivered straight to your doorstep in <strong>30 minutes or less</strong>.
+            </p>
+            <p style={{ lineHeight: '1.6', color: '#2d3436' }}>
+              From juicy gourmet burgers to authentic pizzas, pastas, and exclusive combo deals, every dish is prepared daily with fresh ingredients by world-class chefs.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Cart Modal */}
       {isCartModalOpen && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-          backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 300
-        }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 300 }}>
           <div style={{ backgroundColor: 'white', borderRadius: '20px', width: '90%', maxWidth: '450px', padding: '25px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h2>Your Cart 🛒</h2>
               <button onClick={() => setIsCartModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer' }}>✕</button>
             </div>
-            
             <hr style={{ margin: '15px 0' }} />
-
             {cart.length === 0 ? (
               <p style={{ textAlign: 'center', color: '#999' }}>Your cart is empty!</p>
             ) : (
@@ -194,21 +257,15 @@ function App() {
                     <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
                       <div>
                         <strong>{c.name}</strong>
-                        {c.selectedVariant && <span style={{ fontSize: '12px', color: '#636e72', display: 'block' }}>Size: {c.selectedVariant}</span>}
                       </div>
                       <strong style={{ color: '#ff3838' }}>Rs. {c.price}</strong>
-                    </div>
-                  ))}
-                </div>
+                    </di</div>
                 <hr style={{ margin: '15px 0' }} />
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '18px', fontWeight: 'bold' }}>
                   <span>Total:</span>
                   <span style={{ color: '#ff3838' }}>Rs. {calculateTotal()}</span>
                 </div>
-                <button 
-                  onClick={handleOpenCheckout}
-                  style={{ width: '100%', padding: '12px', backgroundColor: '#00b894', color: 'white', border: 'none', borderRadius: '25px', marginTop: '15px', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer' }}
-                >
+                <button onClick={handleOpenCheckout} style={{ width: '100%', padding: '12px', backgroundColor: '#00b894', color: 'white', border: 'none', borderRadius: '25px', marginTop: '15px', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer' }}>
                   Proceed to Payment & Checkout 🚚
                 </button>
               </div>
@@ -216,6 +273,40 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Footer / Contact & Location Section */}
+      <footer id="footer-section" style={{ backgroundColor: '#111827', color: '#ffffff', padding: '40px 20px 20px', marginTop: '60px' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '30px' }}>
+          <div>
+            <h3 style={{ color: '#ff3838', margin: '0 0 10px' }}>🍕 FoodExpress</h3>
+            <p style={{ color: '#9ca3af', maxWidth: '300px' }}>Fastest Food Delivery Service. Hot & Fresh meals delivered in 30 minutes!</p>
+            <p style={{ color: '#00b894', fontWeight: 'bold' }}>⚡ Guaranteed 30 Mins Fast Delivery</p>
+          </div>
+
+          <div>
+            <h4 style={{ color: '#ffffff', margin: '0 0 10px' }}>📞 Contact Us</h4>
+            <p style={{ color: '#d1d5db', margin: '5px 0' }}>Phone: <strong>0300000000</strong></p>
+            <p style={{ color: '#d1d5db', margin: '5px 0' }}>Email: support@foodexpress.com</p>
+          </div>
+
+          <div>
+            <h4 style={{ color: '#ffffff', margin: '0 0 10px' }}>📍 Location & Map</h4>
+            <p style={{ color: '#d1d5db', margin: '5px 0' }}>Main Boulevard, Gulberg, Lahore</p>
+            <a 
+              href="https://maps.google.com/?q=Lahore" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{ color: '#ff7675', fontWeight: 'bold', textDecoration: 'underline', display: 'inline-block', marginTop: '5px' }}
+            >
+              🗺️ Open in Google Maps
+            </a>
+          </div>
+        </div>
+
+        <div style={{ textAlign: 'center', borderTop: '1px solid #1f2937', marginTop: '30px', paddingTop: '20px', color: '#6b7280', fontSize: '13px' }}>
+          © 2026 FoodExpress. All rights reserved.
+        </div>
+      </footer>
 
     </div>
   );
